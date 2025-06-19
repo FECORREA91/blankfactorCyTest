@@ -26,8 +26,8 @@ The project targets the BlankFactor website: [BlankFactor](https://blankfactor.c
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/FECORREA91/CucumberCYTest.git
-   cd CucumberCYTest
+   git clone https://github.com/FECORREA91/blankfactorCyTest.git
+   cd blankfactorCyTest
 
 2. **Install Dependencies:**
 
