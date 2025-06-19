@@ -1,0 +1,34 @@
+# Node modules
+node_modules/
+
+# Cypress screenshots and videos
+cypress/screenshots/
+cypress/videos/
+
+# Allure results and reports
+allure-results/
+allure-report/
+
+# VSCode settings (opcional)
+.vscode/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env variables (si usas archivos locales)
+.env
+.env.local
+
+# IDE / sistema
+.idea/
+*.swp
+*.swo
+
+# Coverage (si aplicas pruebas con cobertura más adelante)
+coverage/
