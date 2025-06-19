@@ -2,9 +2,9 @@ const { defineConfig } = require("cypress");
 const createBundler = require("@bahmutov/cypress-esbuild-preprocessor");
 const createEsbuildPlugin = require("@badeball/cypress-cucumber-preprocessor/esbuild").default;
 const addCucumberPreprocessorPlugin = require("@badeball/cypress-cucumber-preprocessor").addCucumberPreprocessorPlugin;
-const { beforeRunHook, afterRunHook } = require('cypress-mochawesome-reporter/lib');
 const fs = require('fs');
 const path = require('path');
+const allureWriter = require('@shelex/cypress-allure-plugin/writer');
 
 module.exports = defineConfig({
   e2e: {
@@ -12,6 +12,7 @@ module.exports = defineConfig({
     viewportHeight: 1080,
     experimentalModifyObstructiveThirdPartyCode: true,
     experimentalMemoryManagement: true,
+    experimentalInteractiveRunEvents: true,
     
     blockHosts: [
       "*.algolia.net",
@@ -28,12 +29,16 @@ module.exports = defineConfig({
     pageLoadTimeout: 60000,
     requestTimeout: 15000,
     responseTimeout: 15000,
+    numTestsKeptInMemory: 5,
     
     baseUrl: 'https://www.blankfactor.com',
     chromeWebSecurity: false,
-    video: false,
+    video: true,
+    videoCompression: 32,
+    videoUploadOnPasses: false,
     screenshotOnRunFailure: true,
-    screenshotsFolder: "cypress/reports/screenshots",
+    screenshotsFolder: "cypress/allure-results",
+    videosFolder: "cypress/allure-results/videos",
     trashAssetsBeforeRuns: true,
 
     async setupNodeEvents(on, config) {
@@ -43,19 +48,23 @@ module.exports = defineConfig({
         plugins: [createEsbuildPlugin(config)]
       }));
 
-      on('before:run', async (details) => {
-        await beforeRunHook(details);
-        
-        const reportsDir = path.join(__dirname, 'cypress', 'reports');
+      on('before:run', async () => {
+        const reportsDir = path.join(__dirname, 'cypress', 'allure-results');
         if (fs.existsSync(reportsDir)) {
           fs.rmSync(reportsDir, { recursive: true, force: true });
         }
         fs.mkdirSync(reportsDir, { recursive: true });
       });
 
-      on('after:run', async (results) => {
-        await afterRunHook();
-        return results;
+      on('after:spec', (spec, results) => {
+        if (results && results.video) {
+          const failures = results.tests.some((test) => 
+            test.attempts.some((attempt) => attempt.state === 'failed')
+          );
+          if (!failures) {
+            fs.unlinkSync(results.video);
+          }
+        }
       });
 
       on('before:browser:launch', (browser = {}, launchOptions) => {
@@ -69,7 +78,9 @@ module.exports = defineConfig({
             '--disable-extensions',
             '--disable-setuid-sandbox',
             '--disable-infobars',
-            '--ignore-certificate-errors'
+            '--ignore-certificate-errors',
+            '--allow-running-insecure-content',
+            '--disable-web-security'
           );
         }
         
@@ -77,7 +88,8 @@ module.exports = defineConfig({
           launchOptions.args.push('--width=1920', '--height=1080');
           launchOptions.preferences = {
             'toolkit.telemetry.reportingpolicy.firstRun': false,
-            'dom.ipc.processCount': 8
+            'dom.ipc.processCount': 8,
+            'network.cookie.cookieBehavior': 0
           };
         }
         
@@ -104,8 +116,15 @@ module.exports = defineConfig({
         logFeature: (message) => {
           console.log(`[FEATURE]: ${message}`);
           return null;
+        },
+        allureLogStep: (message) => {
+          const allure = require('allure-cypress/reporter');
+          allure.step(message);
+          return null;
         }
       });
+      
+      allureWriter(on, config);
       
       return config;
     },
@@ -132,57 +151,14 @@ module.exports = defineConfig({
       omitFiltered: true,
       filterSpecs: true,
       showFullDescription: true,
-      detailedReporting: true
-    }
-  },
-  
-  reporter: 'cypress-mochawesome-reporter',
-  reporterOptions: {
-    reportDir: 'cypress/reports',
-    overwrite: false,
-    html: true,
-    json: true,
-    charts: true,
-    reportPageTitle: 'BlankFactor Test Report - Detallado',
-    embeddedScreenshots: true,
-    inlineAssets: true,
-    saveAllAttempts: false,
-    code: true,
-    autoOpen: false,
-    timestamp: 'yyyy-mm-dd_HH-MM-ss',
-    showPassed: true,
-    showFailed: true,
-    showPending: true,
-    showSkipped: false,
-    showHooks: 'failed',
-    saveJson: true,
-    saveHtml: true,
-    cdn: true,
-    reportFilename: "[status]_[datetime]-[name]-report",
-    jsonReportFilename: "[datetime]-[name]-report",
-    timestampOptions: {
-      format: "YYYY-MM-DD_HH-mm-ss",
-      timezone: "America/Bogota"
-    },
-
-    cypressCommandLog: true,
-    consoleReporter: 'spec',
-    steps: true,
-    featureName: true,
-    scenarioName: true,
-    useInlineDiffs: true,
-    testStatus: true,
-    testDuration: true,
-    context: true,
-    commands: true,
-    stackTrace: true,
-    groupSuites: true,
-    groupTests: true,
-    showEnvironment: true,
-    environment: {
-      viewport: '1920x1080',
-      browser: 'chrome',
-      baseUrl: 'https://www.blankfactor.com'
+      detailedReporting: true,
+      allure: true,
+      allureReuseAfterSpec: true,
+      allureAttachRequests: true,
+      allureAddVideoOnPass: false,
+      allureClearSkippedTests: true,
+      allureAddAnalyticLabels: true,
+      allureLogCypress: true
     }
   },
   
