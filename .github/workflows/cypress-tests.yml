@@ -1,4 +1,4 @@
-name: Cypress Tests
+ name: Cypress Tests
 on:
   push:
     branches: [ main, develop ]
@@ -39,33 +39,37 @@ jobs:
         run: npm run report
 
       - name: Upload Allure report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: allure-report
           path: cypress/allure-report
           retention-days: 7
+          compression-level: 9
 
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure() && env.CYPRESS_RUN_STATUS != 0
         with:
           name: cypress-screenshots
           path: cypress/screenshots
           retention-days: 7
+          compression-level: 9
 
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure() && env.CYPRESS_RUN_STATUS != 0
         with:
           name: cypress-videos
           path: cypress/videos
           retention-days: 7
+          compression-level: 9
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: allure-results
           path: cypress/allure-results
           retention-days: 7
+          compression-level: 9
