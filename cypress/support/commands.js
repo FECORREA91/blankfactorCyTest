@@ -1,25 +1,24 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+Cypress.Commands.add('safeVisit', (url, options = {}) => {
+  const defaultOptions = {
+    onBeforeLoad(win) {
+      win.__algolia = { disabled: true };
+      win.AlgoliaSearch = function() {
+        this.search = () => Promise.resolve({ hits: [] });
+      };
+    },
+    timeout: 60000
+  };
+
+
+  const visitWithRetry = (attempt = 0) => {
+    return cy.visit(url, { ...defaultOptions, ...options })
+      .catch((err) => {
+        if (attempt < 2) {
+          return visitWithRetry(attempt + 1);
+        }
+        throw err;
+      });
+  };
+
+  return visitWithRetry();
+});

@@ -1,12 +1,20 @@
 class IndustriesPage {
   elements = {
-    retirementWealthLink: () => cy.get('.last-section > .container > .section-row > .col-right > .column-title').contains('a', 'Retirement and Wealth')
+    retirementWealthLink: () => cy.contains('h3', ' Retirement and Wealth'),
+    learnMoreBtn: () => cy.get('a[title="Learn More"]')
   };
 
   selectRetirementAndWealth() {
     this.elements.retirementWealthLink()
+      .scrollIntoView()
       .should('be.visible')
       .click({ force: true });
+
+    this.elements.learnMoreBtn()
+      .scrollIntoView()
+      .should('be.visible')
+      .click();
+    
     return this;
   }
 

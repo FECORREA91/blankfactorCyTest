@@ -21,9 +21,11 @@ When('I scroll to the AI & Machine Learning tile', () => {
 });
 
 Then('I copy the text of the 3rd tile', () => {
-  retirementPage.copyAITileText();
+  retirementPage.copyAITileText().then((text) => {
+    cy.log('Texto copiado:', text);
+    cy.wrap(text).as('tileText');
+  });
 });
-
 Then('I click on the "Let\'s get started" button', () => {
   retirementPage.clickLetsGetStarted();
 });

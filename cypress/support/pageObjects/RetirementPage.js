@@ -1,6 +1,6 @@
 class RetirementPage {
   elements = {
-    aiMachineLearningTile: () => cy.get('.tiles-container .tile').eq(2),
+    aiMachineLearningTile: () => cy.get('div.card-wrapper').eq(2),
     letsGetStartedBtn: () => cy.contains('a', "Let's get started"),
     pageTitle: () => cy.title()
   };
@@ -10,19 +10,20 @@ class RetirementPage {
       .scrollIntoView()
       .should('be.visible');
     return this;
-  }
+  };
 
   copyAITileText() {
-    return this.elements.aiMachineLearningTile()
-      .trigger('mouseover')
-      .invoke('text')
-      .then((text) => {
-        const trimmedText = text.trim();
-        cy.task('log', `AI & Machine Learning Tile Text: ${trimmedText}`);
-        return trimmedText;
-      });
-  }
-
+    return new Cypress.Promise((resolve) => {
+      this.elements.aiMachineLearningTile()
+        .invoke('text')
+        .then((text) => {
+          const trimmedText = text.trim();
+          cy.task('log', `Text: ${trimmedText}`);
+          resolve(trimmedText); 
+        });
+    });
+  };
+  
   clickLetsGetStarted() {
     this.elements.letsGetStartedBtn()
       .should('be.visible')
@@ -32,7 +33,7 @@ class RetirementPage {
 
   verifyContactPage() {
     cy.url().should('include', '/contact');
-    this.elements.pageTitle().should('include', 'Contact Us');
+    this.elements.pageTitle().should('include', 'Contact | Blankfactor');
     return this;
   }
 

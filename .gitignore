@@ -1,34 +1,64 @@
-# Node modules
+## Dependencias ##
 node_modules/
+.pnp
+.pnp.js
 
-# Cypress screenshots and videos
+## Cypress ##
 cypress/screenshots/
 cypress/videos/
+cypress/downloads/
+cypress/reports/
+cypress/fixtures/examples/
+cypress/.env
 
-# Allure results and reports
+## Reportes ##
 allure-results/
 allure-report/
+mochawesome-report/
+coverage/
 
-# VSCode settings (opcional)
-.vscode/
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Env variables (si usas archivos locales)
+## Entorno ##
 .env
 .env.local
+.env.development
+.env.test
+.env.production
 
-# IDE / sistema
+## Editor/IDE ##
+.vscode/
 .idea/
 *.swp
 *.swo
+*.sublime-workspace
+*.sublime-project
 
-# Coverage (si aplicas pruebas con cobertura más adelante)
-coverage/
+## Sistema ##
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+## Logs ##
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+*.log
+
+## Misceláneos ##
+*.tmp
+*.bak
+*.patch
+*.diff
+*.orig
+*.rej
+*.sass-cache
+*.cache
+*.seed
+*.pid.lock
+*.pid
+*.lcov
+*.tsbuildinfo
