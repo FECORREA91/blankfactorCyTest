@@ -131,3 +131,9 @@ cypress-xpath – XPath selector support
 
 🤝 Contributing
 Feel free to fork the repo, submit pull requests, or open issues to collaborate on this project
+
+👤 Author
+Fabian Esteban Correa
+QA Automation Engineer
+📧 fecorrea91@gmail.com
+🔗 GitHub – @FECORREA91
