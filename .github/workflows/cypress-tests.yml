@@ -8,11 +8,8 @@ on:
 jobs:
   cypress-run:
     name: Cypress Run
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # Versión LTS más estable
     timeout-minutes: 30
-    container:
-      image: cypress/browsers:node18.17.1-chrome117-ff115-edge
-      options: --user 1001
 
     steps:
       - name: Checkout code
@@ -26,14 +23,32 @@ jobs:
           node-version: 18.x
           cache: 'npm'
 
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+
+      - name: Install Chrome
+        run: |
+          sudo apt-get install -y wget
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Verify Chrome installation
+        run: google-chrome --version
+
       - name: Install dependencies
-        run: npm ci --prefer-offline
+        run: npm ci
 
       - name: Run Cypress tests
         run: |
           npm run test:ci
           echo "CYPRESS_RUN_STATUS=$?" >> $GITHUB_ENV
-
+        env:
+          DISPLAY: ':99'
+        
       - name: Generate Allure report
         if: always()
         run: npm run report
