@@ -4,37 +4,33 @@ class HomePage {
   }
 
   elements = {
-    acceptCookiesBtn: () => cy.get('.cky-notice-btn-wrapper > .cky-btn-accept'),
-    industriesMenu: () => cy.get('#menu-item-4871 > [href="https://blankfactor.com/industries/"]'),
+    acceptCookiesBtn: () => cy.get('.cky-notice-btn-wrapper > .cky-btn-accept').should('exist'),
+    industriesMenu: () => cy.get('#menu-item-4871 > [href="https://blankfactor.com/industries/"]').should('exist'),
     pageTitle: () => cy.title()
   };
 
   visit() {
-    cy.visit(this.url, {
+    return cy.visit(this.url, {
       failOnStatusCode: false,
       timeout: 50000
     });
-    return this;
   }
 
   acceptCookies() {
-    this.elements.acceptCookiesBtn()
+    return this.elements.acceptCookiesBtn()
       .should('be.visible')
       .click({ force: true });
-    return this;
   }
 
   navigateToIndustries() {
-    this.elements.industriesMenu()
+    return this.elements.industriesMenu()
       .should('be.visible')
       .click({ force: true });
-    return this;
   }
 
   verifyPageTitle(expectedTitle) {
-    this.elements.pageTitle()
+    return this.elements.pageTitle()
       .should('include', expectedTitle);
-    return this;
   }
 }
 

@@ -17,6 +17,7 @@ When('I navigate to "Retirement and Wealth" section', () => {
   cy.allure().step('Navigating to Retirement and Wealth section');
   homePage.navigateToIndustries();
   industriesPage.selectRetirementAndWealth();
+  industriesPage.verifyNavigation();
 });
 
 When('I scroll to the AI & Machine Learning tile', () => {
@@ -28,9 +29,8 @@ Then('I copy the text of the 3rd tile', () => {
   cy.allure().step('Copying text of the 3rd tile');
   
   retirementPage.copyAITileText().then((text) => {
-    const trimmedText = text.trim();
-    cy.allure().attachment('Texto del tile', trimmedText, 'text/plain');
-    cy.wrap(trimmedText).as('tileText');
+    cy.allure().attachment('Texto del tile', text, 'text/plain');
+    cy.wrap(text).as('tileText');
   });
 });
 

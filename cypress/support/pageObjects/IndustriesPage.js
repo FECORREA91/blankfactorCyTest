@@ -1,7 +1,7 @@
 class IndustriesPage {
   elements = {
-    retirementWealthLink: () => cy.contains('h3', ' Retirement and Wealth'),
-    learnMoreBtn: () => cy.get('a[title="Learn More"]')
+    retirementWealthLink: () => cy.contains('h3', 'Retirement and Wealth').should('exist'),
+    learnMoreBtn: () => cy.get('a[title="Learn More"]').should('exist')
   };
 
   selectRetirementAndWealth() {
@@ -10,17 +10,14 @@ class IndustriesPage {
       .should('be.visible')
       .click({ force: true });
 
-    this.elements.learnMoreBtn()
+    return this.elements.learnMoreBtn()
       .scrollIntoView()
       .should('be.visible')
       .click();
-    
-    return this;
   }
 
   verifyNavigation() {
-    cy.url().should('include', '/industries/retirement');
-    return this;
+    return cy.url().should('include', '/industries/retirement');
   }
 }
 

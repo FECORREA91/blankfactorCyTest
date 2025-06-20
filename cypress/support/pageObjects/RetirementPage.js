@@ -1,39 +1,39 @@
 class RetirementPage {
   elements = {
-    aiMachineLearningTile: () => cy.get('div.card-wrapper').eq(2),
-    letsGetStartedBtn: () => cy.contains('a', "Let's get started"),
+    aiMachineLearningTile: () => cy.get('div.card-wrapper').eq(2).should('exist'),
+    letsGetStartedBtn: () => cy.contains('a', "Let's get started").should('exist'),
     pageTitle: () => cy.title()
   };
 
   scrollToAITile() {
-    this.elements.aiMachineLearningTile()
+    return this.elements.aiMachineLearningTile()
       .scrollIntoView()
       .should('be.visible');
-    return this;
   };
 
   copyAITileText() {
     return this.elements.aiMachineLearningTile()
-      .invoke('text');
+      .invoke('text')
+      .then(text => text.trim());
   };
   
   clickLetsGetStarted() {
-    this.elements.letsGetStartedBtn()
+    return this.elements.letsGetStartedBtn()
       .should('be.visible')
       .click({ force: true });
-    return this;
   }
 
   verifyContactPage() {
     cy.url().should('include', '/contact');
-    this.elements.pageTitle().should('include', 'Contact | Blankfactor');
-    return this;
+    return this.elements.pageTitle()
+      .should('include', 'Contact | Blankfactor');
   }
 
   logPageTitle() {
-    this.elements.pageTitle()
-      .then(title => cy.task('log', `Page Title: ${title}`));
-    return this;
+    return this.elements.pageTitle()
+      .then(title => {
+        cy.log(`Page Title: ${title}`);
+      });
   }
 }
 
