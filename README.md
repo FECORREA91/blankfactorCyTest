@@ -42,6 +42,7 @@ npm install
 ```
 🏗️ Project Structure
 
+```
 📂 blankfactorCyTest
 ├── 📁 cypress
 │   ├── 📁 e2e
@@ -59,6 +60,7 @@ npm install
 ├── cypress.config.js
 ├── .gitignore
 └── package.json
+```
 
 ## ⚙️ Continuous Integration – GitHub Actions
 
@@ -74,19 +76,18 @@ This project uses **GitHub Actions** to automate the test pipeline on each `push
 - Executes even if the test step fails (for complete reporting).
 
 ### 🗂️ Workflow File Location:
-```text
+```
 .github/workflows/cypress-tests.yml
-
+```
 🧪 Running Tests
 1. Interactive Mode (UI)
 ```
 npm run test:open
 ```
 2. Headless Mode with Allure Reports
-bash
-Copy
-Edit
+```
 npm run test
+```
 3. CI Mode (Chrome Headless)
 ```
 npm run test:ci
@@ -129,19 +130,4 @@ cypress-xpath – XPath selector support
 - [🌐 BlankFactor Website](https://blankfactor.com/)
 
 🤝 Contributing
-Feel free to fork the repo, submit pull requests, or open issues to collaborate on this project.
-
-
-
-
-
-
-
-
-
-
-
-
-Tools
-
-
+Feel free to fork the repo, submit pull requests, or open issues to collaborate on this project
