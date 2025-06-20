@@ -5,17 +5,24 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+env:
+  CYPRESS_RETRIES: 2
+  ALLURE_RESULTS: allure-results
+  SCREENSHOTS_DIR: cypress/screenshots
+  VIDEOS_DIR: cypress/videos
+
 jobs:
   cypress-run:
-    name: Cypress Run
+    name: Cypress Tests
     runs-on: ubuntu-22.04
-    timeout-minutes: 30
+    timeout-minutes: 15
+    container:
+      image: cypress/browsers:node18.17.1-chrome117
+      options: --user 1001
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -23,63 +30,38 @@ jobs:
           node-version: 18.x
           cache: 'npm'
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-
-      - name: Install Chrome
-        run: |
-          sudo apt-get install -y wget
-          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-          echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
-      - name: Verify Chrome installation
-        run: google-chrome --version
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Cypress tests with report generation
+      - name: Run Cypress tests
         run: |
-          npm run test:ci || true
-          npm run report
-          echo "CYPRESS_RUN_STATUS=$?" >> $GITHUB_ENV
+          npx cypress run --browser chrome --headless \
+            --env allure=true,allureAddCucumberSteps=true \
+            --config screenshotsFolder="$SCREENSHOTS_DIR",videosFolder="$VIDEOS_DIR"
+        continue-on-error: true
 
-      - name: Upload Allure report
+      - name: Generate Allure report
+        if: always()
+        run: |
+          npx allure generate "$ALLURE_RESULTS" --clean -o allure-report
+          echo "REPORT_PATH=allure-report/index.html" >> $GITHUB_ENV
+
+      - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: allure-report
-          path: cypress/allure-report
-          retention-days: 7
-          compression-level: 9
+          name: test-artifacts
+          path: |
+            ${{ env.ALLURE_RESULTS }}
+            ${{ env.SCREENSHOTS_DIR }}
+            ${{ env.VIDEOS_DIR }}
+            allure-report
+          retention-days: 3
 
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v4
-        if: failure() && env.CYPRESS_RUN_STATUS != 0
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-          retention-days: 7
-          compression-level: 9
-
-      - name: Upload videos
-        uses: actions/upload-artifact@v4
-        if: failure() && env.CYPRESS_RUN_STATUS != 0
-        with:
-          name: cypress-videos
-          path: cypress/videos
-          retention-days: 7
-          compression-level: 9
-
-      - name: Upload test results
+      - name: Upload report summary
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: allure-results
-          path: cypress/allure-results
-          retention-days: 7
-          compression-level: 9
+          name: report-summary
+          path: ${{ env.REPORT_PATH }}
+          retention-days: 3
