@@ -60,6 +60,23 @@ npm install
 ├── .gitignore
 └── package.json
 
+## ⚙️ Continuous Integration – GitHub Actions
+
+This project uses **GitHub Actions** to automate the test pipeline on each `push` or `pull request` to the `main` and `develop` branches.
+
+### 🧪 What Happens in the Workflow?
+
+- Installs project dependencies using `npm ci`.
+- Verifies Cypress installation.
+- Runs Cypress tests in **headless Chrome** mode.
+- Generates **Allure reports** after test execution.
+- Stores screenshots and video recordings in the defined folders.
+- Executes even if the test step fails (for complete reporting).
+
+### 🗂️ Workflow File Location:
+```text
+.github/workflows/cypress-tests.yml
+
 🧪 Running Tests
 1. Interactive Mode (UI)
 ```
