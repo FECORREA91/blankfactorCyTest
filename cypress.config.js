@@ -11,154 +11,75 @@ module.exports = defineConfig({
     viewportWidth: 1920,
     viewportHeight: 1080,
     experimentalModifyObstructiveThirdPartyCode: true,
-    experimentalMemoryManagement: true,
-    experimentalInteractiveRunEvents: true,
-    
-    blockHosts: [
-      "*.algolia.net",
-      "*.algolianet.com",
-      "*.google-analytics.com",
-      "*.googletagmanager.com",
-      "*.facebook.com",
-      "*.linkedin.com"
-    ],
     
     defaultCommandTimeout: 20000,
     execTimeout: 60000,
-    taskTimeout: 60000,
     pageLoadTimeout: 60000,
-    requestTimeout: 15000,
-    responseTimeout: 15000,
-    numTestsKeptInMemory: 5,
     
-    baseUrl: 'https://www.blankfactor.com',
-    chromeWebSecurity: false,
-    video: true,
-    videoCompression: 32,
-    videoUploadOnPasses: false,
+    video: false,
     screenshotOnRunFailure: true,
-    screenshotsFolder: "cypress/allure-results",
-    videosFolder: "cypress/allure-results/videos",
+    screenshotsFolder: "cypress/screenshots",
+    videosFolder: "cypress/videos",
     trashAssetsBeforeRuns: true,
 
     async setupNodeEvents(on, config) {
+      // Configurar Cucumber primero
       await addCucumberPreprocessorPlugin(on, config);
       
+      // Configurar el preprocesador de features
       on("file:preprocessor", createBundler({
         plugins: [createEsbuildPlugin(config)]
       }));
 
-      on('before:run', async () => {
-        const reportsDir = path.join(__dirname, 'cypress', 'allure-results');
-        if (fs.existsSync(reportsDir)) {
-          fs.rmSync(reportsDir, { recursive: true, force: true });
-        }
-        fs.mkdirSync(reportsDir, { recursive: true });
-      });
+      // Configurar Allure después de Cucumber
+      allureWriter(on, config);
 
-      on('after:spec', (spec, results) => {
-        if (results && results.video) {
-          const failures = results.tests.some((test) => 
-            test.attempts.some((attempt) => attempt.state === 'failed')
-          );
-          if (!failures) {
-            fs.unlinkSync(results.video);
+      // Limpieza de directorios
+      on('before:run', async (details) => {
+        const allureResultsDir = path.join(__dirname, 'allure-results');
+        const screenshotsDir = path.join(__dirname, 'cypress', 'screenshots');
+        
+        [allureResultsDir, screenshotsDir].forEach(dir => {
+          if (fs.existsSync(dir)) {
+            fs.rmSync(dir, { recursive: true, force: true });
           }
-        }
+          fs.mkdirSync(dir, { recursive: true });
+        });
+
+        // Crear archivo de entorno para Allure
+        fs.writeFileSync(
+          path.join(allureResultsDir, 'environment.properties'),
+          `Browser=${details.browser.name}\n` +
+          `Version=${details.browser.version}\n` +
+          `Platform=${details.system.osName}\n` +
+          `Cypress=${details.cypressVersion}\n`
+        );
       });
 
-      on('before:browser:launch', (browser = {}, launchOptions) => {
-        if (browser.family === 'chromium') {
-          launchOptions.args.push(
-            '--start-maximized',
-            '--window-size=1920,1080',
-            '--disable-dev-shm-usage',
-            '--no-sandbox',
-            '--disable-gpu',
-            '--disable-extensions',
-            '--disable-setuid-sandbox',
-            '--disable-infobars',
-            '--ignore-certificate-errors',
-            '--allow-running-insecure-content',
-            '--disable-web-security'
-          );
-        }
-        
-        if (browser.name === 'firefox') {
-          launchOptions.args.push('--width=1920', '--height=1080');
-          launchOptions.preferences = {
-            'toolkit.telemetry.reportingpolicy.firstRun': false,
-            'dom.ipc.processCount': 8,
-            'network.cookie.cookieBehavior': 0
-          };
-        }
-        
-        return launchOptions;
-      });
-      
+      // Tareas adicionales
       on('task', {
         log: (message) => {
           console.log(message);
           return null;
         },
-        error: (message) => {
-          console.error(message);
-          return null;
-        },
-        logStep: (message) => {
-          console.log(`[STEP]: ${message}`);
-          return null;
-        },
-        logScenario: (message) => {
-          console.log(`[SCENARIO]: ${message}`);
-          return null;
-        },
-        logFeature: (message) => {
-          console.log(`[FEATURE]: ${message}`);
-          return null;
-        },
-        allureLogStep: (message) => {
-          const allure = require('allure-cypress/reporter');
-          allure.step(message);
-          return null;
+        readFile: (filePath) => {
+          return fs.readFileSync(filePath, 'utf8');
         }
       });
-      
-      allureWriter(on, config);
-      
+
       return config;
     },
     
     specPattern: "cypress/e2e/features/**/*.feature",
-    excludeSpecPattern: [
-      "*.hot-update.js",
-      "**/__snapshots__/*",
-      "**/__image_snapshots__/*"
-    ],
     
     env: {
-      screenSize: '1920x1080',
-      filterErrorMessages: [
-        "Algolia",
-        "RetryError",
-        "Unreachable hosts",
-        "application id may be incorrect",
-        "cookieyes",
-        "gtm"
-      ],
-      grepFilterSpecs: true,
-      grepOmitFiltered: true,
-      omitFiltered: true,
-      filterSpecs: true,
-      showFullDescription: true,
-      detailedReporting: true,
       allure: true,
       allureReuseAfterSpec: true,
-      allureAttachRequests: true,
-      allureAddVideoOnPass: false,
-      allureClearSkippedTests: true,
-      allureAddAnalyticLabels: true,
-      allureLogCypress: true
+      allureAttachRequests: false,
+      allureResultsPath: "allure-results",
+      allureCleanSkippedTests: true,
+      allureAddCucumberSteps: true,
+      allureLogCypress: false
     }
   },
   

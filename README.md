@@ -1,4 +1,5 @@
-# Cypress POM Project with Cucumber and JavaScript
+# Cypress POM Project with Cucumber, Allure Reports and JavaScript
+📋 Project Overview
 
 This project is a test automation suite built with **Cypress**, **Cucumber**, and **JavaScript**, following the **Page Object Model (POM)** architecture for better code organization and maintenance.  
 The project targets the BlankFactor website: [BlankFactor](https://blankfactor.com)
@@ -35,20 +36,6 @@ The project targets the BlankFactor website: [BlankFactor](https://blankfactor.c
    npm install
    ```
 
-3. **Install Allure CLI (if not installed):**
-
-   * Windows:
-
-     ```bash
-     scoop install allure
-     ```
-   * MacOS:
-
-     ```bash
-     brew install allure
-     ```
-   * Linux:
-     [Download Allure CLI](https://docs.qameta.io/allure/#_installing_a_commandline)
 
 ## 🏗️ Project Structure
 
@@ -76,9 +63,20 @@ The project targets the BlankFactor website: [BlankFactor](https://blankfactor.c
 
 1. **Open Cypress Test Runner (Interactive):**
 
-   ```bash
-   npx cypress open
-   ```
+
+# Interactive mode (Cypress UI)
+```
+npm run test:open
+```
+# Headless mode (Allure reports enabled)
+```
+npm run test
+```
+
+# CI mode (Chrome headless)
+```
+npm run test:ci
+```
 
 2. **Run All Tests (Headless):**
 
@@ -93,6 +91,15 @@ The project targets the BlankFactor website: [BlankFactor](https://blankfactor.c
    ```bash
    npx allure generate allure-results --clean -o allure-report
    ```
+
+   # Generate and view Allure report
+npm run report
+
+# Serve temporary report (http://localhost:8080)
+npm run report:serve
+
+# Full clean execution (CI/CD ready)
+npm run full-test
 
 2. **Open the report in browser:**
 

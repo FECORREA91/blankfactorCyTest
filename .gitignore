@@ -14,8 +14,6 @@ cypress/.env
 ## Reportes ##
 allure-results/
 allure-report/
-mochawesome-report/
-coverage/
 
 ## Entorno ##
 .env

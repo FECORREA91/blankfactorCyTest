@@ -1,11 +1,16 @@
-import 'cypress-xpath';
 import './commands';
+import 'cypress-xpath';
 
-// Manejo unificado y mejorado de excepciones no controladas en Cypress
-Cypress.on('uncaught:exception', (err) => {
+// Configuración global de Allure
+before(() => {
+  // Usar cy.allure() en lugar de Cypress.Allure
+  cy.allure().epic('BlankFactor Automation');
+  cy.allure().feature('UI Automation');
+});
+
+// Manejo unificado de excepciones
+Cypress.on('uncaught:exception', (err, runnable) => {
   const ignoredErrors = [
-    ...(Cypress.env('filterErrorMessages') || []),
-    // Errores específicos a ignorar
     'ga is not defined',
     'replaceAll',
     'postMessage',
@@ -17,40 +22,41 @@ Cypress.on('uncaught:exception', (err) => {
     'algolianet',
     'RetryError',
     'Unreachable hosts',
-    'application id may be incorrect'
+    'application id may be incorrect',
+    'cookieyes',
+    'gtm'
   ];
 
-  const shouldIgnore = ignoredErrors.some(error =>
+  const shouldIgnore = ignoredErrors.some(error => 
     err.message.toLowerCase().includes(error.toLowerCase())
   );
 
   if (shouldIgnore) {
-    console.log('[Cypress] Error ignorado:', err.message);
-    return false; // Ignorar el error y continuar
+    cy.allure().step(`[IGNORED ERROR] ${err.message}`, 'failed');
+    return false;
   }
 
-  console.error('[Cypress] Error no manejado:', err.message);
-  return true; // Permitir que Cypress falle la prueba
+  cy.allure().attachment('Unhandled Error', JSON.stringify({
+    message: err.message,
+    stack: err.stack,
+    test: runnable.title
+  }, null, 2), 'application/json');
+
+  return true;
 });
 
-// Polyfill mejorado con manejo de red
+// Hooks para Allure
 beforeEach(() => {
-  cy.window().then((win) => {
-    if (!win.performance) {
-      win.performance = { timing: {} };
-    }
-    
-    win.addEventListener('error', (event) => {
-      const algoliaUrls = ['algolia.net', 'algolianet.com'];
-      const isAlgoliaError = algoliaUrls.some(url => 
-        event.message?.includes(url) || 
-        event.filename?.includes(url)
-      );
-      
-      if (isAlgoliaError) {
-        event.preventDefault();
-        cy.task('log', `[Window] Error de Algolia ignorado: ${event.message}`);
-      }
+  cy.allure().startStep(Cypress.currentTest.title);
+});
+
+afterEach(() => {
+  if (Cypress.currentTest.state === 'failed') {
+    const screenshotName = `${Cypress.spec.name.replace('.feature', '')}/${Cypress.currentTest.title}`;
+    cy.screenshot(screenshotName, { overwrite: true });
+    cy.task('readFile', `cypress/screenshots/${screenshotName}.png`).then((fileContent) => {
+      cy.allure().attachment('Screenshot on failure', fileContent, 'image/png');
     });
-  });
+  }
+  cy.allure().endStep();
 });
