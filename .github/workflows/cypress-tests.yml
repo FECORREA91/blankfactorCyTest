@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     container:
-      image: cypress/browsers:node18.16.0-chrome117-ff115-edge
+      image: cypress/browsers:node18.17.1-chrome117-ff115-edge
       options: --user 1001
 
     steps:
