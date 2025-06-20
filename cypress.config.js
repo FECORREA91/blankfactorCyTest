@@ -15,8 +15,10 @@ module.exports = defineConfig({
     defaultCommandTimeout: 20000,
     execTimeout: 60000,
     pageLoadTimeout: 60000,
+    requestTimeout: 10000,
+    responseTimeout: 30000,
     
-    video: false,
+    video: true, // Cambiado a true para tener videos en CI
     screenshotOnRunFailure: true,
     screenshotsFolder: "cypress/screenshots",
     videosFolder: "cypress/videos",
@@ -38,8 +40,9 @@ module.exports = defineConfig({
       on('before:run', async (details) => {
         const allureResultsDir = path.join(__dirname, 'allure-results');
         const screenshotsDir = path.join(__dirname, 'cypress', 'screenshots');
+        const videosDir = path.join(__dirname, 'cypress', 'videos');
         
-        [allureResultsDir, screenshotsDir].forEach(dir => {
+        [allureResultsDir, screenshotsDir, videosDir].forEach(dir => {
           if (fs.existsSync(dir)) {
             fs.rmSync(dir, { recursive: true, force: true });
           }
@@ -47,12 +50,18 @@ module.exports = defineConfig({
         });
 
         // Crear archivo de entorno para Allure
+        const environmentInfo = [
+          `Browser=${details.browser?.name || 'chrome'}`,
+          `Version=${details.browser?.version || 'latest'}`,
+          `Platform=${details.system?.osName || process.platform}`,
+          `Cypress=${details.cypressVersion || 'unknown'}`,
+          `Node=${process.version}`,
+          `CI=${process.env.CI || 'false'}`
+        ].join('\n');
+
         fs.writeFileSync(
           path.join(allureResultsDir, 'environment.properties'),
-          `Browser=${details.browser.name}\n` +
-          `Version=${details.browser.version}\n` +
-          `Platform=${details.system.osName}\n` +
-          `Cypress=${details.cypressVersion}\n`
+          environmentInfo
         );
       });
 
@@ -79,7 +88,9 @@ module.exports = defineConfig({
       allureResultsPath: "allure-results",
       allureCleanSkippedTests: true,
       allureAddCucumberSteps: true,
-      allureLogCypress: false
+      allureLogCypress: false,
+      // Agregar variables de entorno específicas del proyecto
+      baseUrl: "https://blankfactor.com"
     }
   },
   

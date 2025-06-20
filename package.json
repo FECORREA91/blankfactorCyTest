@@ -6,10 +6,13 @@
     "test": "cypress run --env allure=true,allureAddCucumberSteps=true",
     "test:ci": "cypress run --browser chrome --headless --env allure=true,allureAddCucumberSteps=true",
     "test:open": "cypress open --env allure=true,allureAddCucumberSteps=true",
+    "test:record": "cypress run --record --key YOUR_RECORD_KEY",
     "report": "allure generate allure-results --clean -o allure-report && allure open allure-report",
     "report:serve": "allure serve allure-results",
-    "clean": "rm -rf allure-results allure-report cypress/screenshots cypress/videos",
-    "full-test": "npm run clean && npm run test:ci && npm run report"
+    "clean": "rm -rf allure-results allure-report cypress/screenshots cypress/videos cypress/downloads",
+    "full-test": "npm run clean && npm run test:ci && npm run report",
+    "lint": "eslint cypress/",
+    "prettier": "prettier --write cypress/"
   },
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^22.0.1",
