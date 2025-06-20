@@ -13,15 +13,8 @@ class RetirementPage {
   };
 
   copyAITileText() {
-    return new Cypress.Promise((resolve) => {
-      this.elements.aiMachineLearningTile()
-        .invoke('text')
-        .then((text) => {
-          const trimmedText = text.trim();
-          cy.task('log', `Text: ${trimmedText}`);
-          resolve(trimmedText); 
-        });
-    });
+    return this.elements.aiMachineLearningTile()
+      .invoke('text');
   };
   
   clickLetsGetStarted() {

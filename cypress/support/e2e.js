@@ -3,7 +3,6 @@ import 'cypress-xpath';
 
 // Configuración global de Allure
 before(() => {
-  // Usar cy.allure() en lugar de Cypress.Allure
   cy.allure().epic('BlankFactor Automation');
   cy.allure().feature('UI Automation');
 });
@@ -36,12 +35,13 @@ Cypress.on('uncaught:exception', (err, runnable) => {
     return false;
   }
 
-  cy.allure().attachment('Unhandled Error', JSON.stringify({
+  const errorContent = JSON.stringify({
     message: err.message,
     stack: err.stack,
     test: runnable.title
-  }, null, 2), 'application/json');
-
+  }, null, 2);
+  
+  cy.allure().attachment('Unhandled Error', errorContent, 'application/json');
   return true;
 });
 

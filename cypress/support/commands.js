@@ -42,22 +42,24 @@ Cypress.Commands.add('setupRequestInterception', () => {
   cy.intercept('**', (req) => {
     req.on('response', (res) => {
       if (res.statusCode >= 400) {
+        const attachmentContent = JSON.stringify({
+          status: res.statusCode,
+          request: { 
+            url: req.url, 
+            method: req.method,
+            headers: req.headers,
+            body: req.body
+          },
+          response: { 
+            status: res.statusCode,
+            headers: res.headers,
+            body: res.body
+          }
+        }, null, 2);
+        
         cy.allure().attachment(
           `Request ${req.method} ${req.url}`,
-          JSON.stringify({
-            status: res.statusCode,
-            request: { 
-              url: req.url, 
-              method: req.method,
-              headers: req.headers,
-              body: req.body
-            },
-            response: { 
-              status: res.statusCode,
-              headers: res.headers,
-              body: res.body
-            }
-          }, null, 2),
+          attachmentContent,
           'application/json'
         );
       }
