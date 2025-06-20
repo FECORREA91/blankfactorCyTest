@@ -1,50 +1,52 @@
 # Cypress POM Project with Cucumber, Allure Reports and JavaScript
-📋 Project Overview
 
-This project is a test automation suite built with **Cypress**, **Cucumber**, and **JavaScript**, following the **Page Object Model (POM)** architecture for better code organization and maintenance.  
-The project targets the BlankFactor website: [BlankFactor](https://blankfactor.com)
+## 📋 Project Overview
 
-## 📋 Why Use These Technologies?
+This project is a test automation suite built with **Cypress**, **Cucumber**, and **JavaScript**, following the **Page Object Model (POM)** architecture for better code organization and maintainability.  
+The tests are implemented for the BlankFactor website: [blankfactor.com](https://blankfactor.com)
 
-### **Cypress**
-* Fast, reliable, and easy to set up.
-* Provides real-time reloading and interactive debugging.
-* Rich set of built-in commands for browser automation.
+---
 
-### **Cucumber (Gherkin)**
-* Enables Behavior-Driven Development (BDD) with human-readable test scenarios.
-* Facilitates collaboration between technical and non-technical team members.
+## 💡 Why These Technologies?
 
-### **JavaScript**
-* Widely used language with a vast ecosystem.
-* Easily integrates with frontend technologies.
+### ✅ Cypress
+- Fast, reliable, and easy to set up.
+- Real-time reloading and interactive debugging.
+- Rich set of built-in commands for browser automation.
 
-### **Page Object Model (POM)**
-* Encourages code reusability and maintainability.
-* Separates test logic from UI interactions, reducing duplication.
+### ✅ Cucumber (Gherkin)
+- Enables Behavior-Driven Development (BDD) with human-readable scenarios.
+- Promotes collaboration between technical and non-technical stakeholders.
 
-## 🚀 Project Setup
+### ✅ JavaScript
+- Popular language with a broad community and extensive libraries.
+- Easily integrates with frontend technologies.
 
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/FECORREA91/blankfactorCyTest.git
-   cd blankfactorCyTest
+### ✅ Page Object Model (POM)
+- Encourages reusability and cleaner test code.
+- Separates UI element interactions from test logic.
 
-2. **Install Dependencies:**
+---
 
-   ```bash
-   npm install
-   ```
+## 🚀 Getting Started
 
+### 1. Clone the Repository
 
-## 🏗️ Project Structure
-
+```bash
+git clone https://github.com/FECORREA91/blankfactorCyTest.git
+cd blankfactorCyTest
 ```
-📂 cypress-project
+2. Install Dependencies
+```
+npm install
+```
+🏗️ Project Structure
+
+📂 blankfactorCyTest
 ├── 📁 cypress
 │   ├── 📁 e2e
 │   │   └── 📁 features
-│   │       ├── automation_blankfactor.feature
+│   │       └── automation_blankfactor.feature
 │   ├── 📁 support
 │   │   ├── 📁 pageObjects
 │   │   │   ├── HomePage.js
@@ -57,72 +59,72 @@ The project targets the BlankFactor website: [BlankFactor](https://blankfactor.c
 ├── cypress.config.js
 ├── .gitignore
 └── package.json
-```
 
-## 🧪 Run the Tests
-
-1. **Open Cypress Test Runner (Interactive):**
-
-
-# Interactive mode (Cypress UI)
+🧪 Running Tests
+1. Interactive Mode (UI)
 ```
 npm run test:open
 ```
-# Headless mode (Allure reports enabled)
-```
+2. Headless Mode with Allure Reports
+bash
+Copy
+Edit
 npm run test
-```
-
-# CI mode (Chrome headless)
+3. CI Mode (Chrome Headless)
 ```
 npm run test:ci
 ```
+4. Basic Cypress Headless Run
+```
+npx cypress run
+```
+📊 Allure Report Generation
+1. Generate Allure Report
+```
+npx allure generate allure-results --clean -o allure-report
+```
+2. Launch Report in Browser
+```
+npx allure open allure-report
+```
+3. Predefined Commands
+```
+npm run report – Generate and view report
 
-2. **Run All Tests (Headless):**
+npm run report:serve – Serve temporary report at http://localhost:8080
 
-   ```bash
-   npx cypress run
-   ```
+npm run full-test – Clean test execution + report (CI/CD ready)
+```
+🔌 Tools & Plugins
+@badeball/cypress-cucumber-preprocessor – Gherkin support
 
-## 📊 Generate Allure Report
+@shelex/cypress-allure-plugin – Allure integration
 
-1. **Generate the report from results:**
+cypress-esbuild-preprocessor – Faster bundling
 
-   ```bash
-   npx allure generate allure-results --clean -o allure-report
-   ```
-
-   # Generate and view Allure report
-npm run report
-
-# Serve temporary report (http://localhost:8080)
-npm run report:serve
-
-# Full clean execution (CI/CD ready)
-npm run full-test
-
-2. **Open the report in browser:**
-
-   ```bash
-   npx allure open allure-report
-   ```
-
-## 🔧 Additional Tools and Plugins
-
-* **@badeball/cypress-cucumber-preprocessor** – to support Gherkin syntax.
-* **@shelex/cypress-allure-plugin** – to generate Allure reports.
-* **cypress-esbuild-preprocessor** – for fast bundling of tests.
-* **cypress-xpath** – to support XPath selectors.
+cypress-xpath – XPath selector support
 
 ## 📚 Resources
 
-* [Cypress Documentation](https://docs.cypress.io/)
-* [Cucumber Gherkin Reference](https://cucumber.io/docs/gherkin/)
-* [Allure Report Documentation](https://docs.qameta.io/allure/)
-* [BlankFactor Website](https://blankfactor.com)
+- [📘 Cypress Documentation](https://docs.cypress.io/app/get-started/why-cypress)
+- [🍀 Cucumber Reference](https://cucumber.io/docs/cucumber/api/)
+- [📊 Allure Report Guide](https://allurereport.org/docs/)
+- [🌐 BlankFactor Website](https://blankfactor.com/)
 
-## 🤝 Contributing
+🤝 Contributing
+Feel free to fork the repo, submit pull requests, or open issues to collaborate on this project.
 
-Feel free to contribute to this project by submitting pull requests or opening issues.
+
+
+
+
+
+
+
+
+
+
+
+Tools
 
 
